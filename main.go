@@ -12,6 +12,7 @@ import (
 // - header should be determined by a configurable pattern
 // - matching with headers should be via regex, not just index
 // - option to output matched header with all subheaders
+// - ? case insensitive search?
 
 func init() {
 	log.SetFlags(0)
