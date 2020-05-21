@@ -55,6 +55,26 @@ foo bar
 ** header 2
 fuzz buzz
 `},
+		{"patter is regex",
+			`header \d$`,
+			`
+* main
+this is main
+** header 1
+*Bold text* with not bold!
+foo bar
+** header 2
+fuzz buzz
+** header A
+hello world
+* header B
+barrr`,
+			`** header 1
+*Bold text* with not bold!
+foo bar
+** header 2
+fuzz buzz
+`},
 	}
 	for _, tt := range tests {
 		tt := tt

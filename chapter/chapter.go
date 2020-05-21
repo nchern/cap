@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"regexp"
-	"strings"
 )
 
 var (
@@ -15,22 +14,26 @@ var (
 // Parse reads the text from given reader line by line, searches for headers that match given pattern
 // and outputs these headers along with their contents to the writer
 func Parse(r io.Reader, pattern string, w io.Writer) error {
+	patternRx, err := regexp.Compile(pattern)
+	if err != nil {
+		return err
+	}
+
 	shouldPrint := false
 
 	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
-		line := strings.TrimSpace(scanner.Text())
+		line := scanner.Text()
 
 		header := headerRx.MatchString(line)
 
 		if header {
-			matched := strings.Index(line, pattern) > -1
+			matched := patternRx.MatchString(line)
 			if !shouldPrint && matched {
 				shouldPrint = true
 			} else if shouldPrint && !matched {
 				shouldPrint = false
 			}
-
 		}
 
 		if shouldPrint {
