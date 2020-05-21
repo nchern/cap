@@ -9,7 +9,6 @@ import (
 )
 
 // TODO:
-// - add tests
 // - header should be determined by a configurable pattern
 // - matching with headers should be via regex, not just index
 // - option to output matched header with all subheaders
@@ -17,13 +16,14 @@ import (
 func init() {
 	log.SetFlags(0)
 	flag.Parse()
-}
 
-func main() {
 	if len(flag.Args()) < 1 {
 		flag.Usage()
 		os.Exit(2)
 	}
+}
+
+func main() {
 	pattern := flag.Arg(0)
 
 	must(chapter.Parse(os.Stdin, pattern, os.Stdout))
