@@ -42,7 +42,7 @@ fuzz buzz
 * main
 this is main
 ** header 1
-*Bold text*
+*Bold text* with not bold!
 foo bar
 ** header 2
 fuzz buzz
@@ -50,7 +50,7 @@ fuzz buzz
 hello world
 * main 2`,
 			`** header 1
-*Bold text*
+*Bold text* with not bold!
 foo bar
 ** header 2
 fuzz buzz

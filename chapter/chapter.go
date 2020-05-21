@@ -4,7 +4,12 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"regexp"
 	"strings"
+)
+
+var (
+	headerRx = regexp.MustCompile(`^\*+?\s`)
 )
 
 // Parse reads the text from given reader line by line, searches for headers that match given pattern
@@ -16,7 +21,7 @@ func Parse(r io.Reader, pattern string, w io.Writer) error {
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
 
-		header := isHeader(line)
+		header := headerRx.MatchString(line)
 
 		if header {
 			matched := strings.Index(line, pattern) > -1
@@ -35,9 +40,4 @@ func Parse(r io.Reader, pattern string, w io.Writer) error {
 		}
 	}
 	return scanner.Err()
-}
-
-func isHeader(line string) bool {
-	headerPattern := "*"
-	return strings.HasPrefix(line, headerPattern) && !strings.HasSuffix(line, headerPattern)
 }
