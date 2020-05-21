@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestParse(t *testing.T) {
+func TestShouldParse(t *testing.T) {
 	var tests = []struct {
 		name         string
 		givenPattern string
