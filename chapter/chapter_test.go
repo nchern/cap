@@ -80,7 +80,7 @@ fuzz buzz
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			var actual bytes.Buffer
-			assert.NoError(t, Parse(bytes.NewBufferString(tt.givenText), tt.givenPattern, &actual))
+			assert.NoError(t, NewParser(bytes.NewBufferString(tt.givenText)).Parse(tt.givenPattern, &actual))
 			assert.Equal(t, tt.expected, actual.String())
 		})
 	}

@@ -26,7 +26,7 @@ func init() {
 func main() {
 	pattern := flag.Arg(0)
 
-	must(chapter.Parse(os.Stdin, pattern, os.Stdout))
+	must(chapter.NewParser(os.Stdin).Parse(pattern, os.Stdout))
 }
 
 func must(err error) {
