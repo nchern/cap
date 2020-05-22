@@ -14,6 +14,7 @@ import (
 // TODO:
 // - header should be determined by a configurable pattern
 // - ? case insensitive search?
+// - print extended help
 
 var includeSubChapters = flag.Bool("i", false,
 	"If set, all sub-chapters of the matched chapters are also printed out. Subchapter is a chapter with headings of higher levels that the initial one")

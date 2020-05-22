@@ -2,6 +2,7 @@ package chapter
 
 import (
 	"bytes"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -17,64 +18,67 @@ func TestShouldParse(t *testing.T) {
 		{"empty text", "foo", "", ""},
 		{"sample_1",
 			"subheader",
-			`
-* main
-this is main
-** subheader 1
-*Bold text*
-foo bar
-** something else
-foo boo
-** subheader 2
-fuzz buzz
-*** deeper
-hello world
-* main 2`,
-			`** subheader 1
-*Bold text*
-foo bar
-** subheader 2
-fuzz buzz
-`},
+			text([]string{
+				"* main",
+				"this is main",
+				"** subheader 1",
+				"*Bold text*",
+				"foo bar",
+				"** something else",
+				"foo boo",
+				"** subheader 2",
+				"fuzz buzz",
+				"*** deeper",
+				"hello world",
+				"* main 2"}),
+			text([]string{
+				"** subheader 1",
+				"*Bold text*",
+				"foo bar",
+				"** subheader 2",
+				"fuzz buzz",
+				""})},
 		{"sequential headers",
 			"header",
-			`
-* main
-this is main
-** header 1
-*Bold text* with not bold!
-foo bar
-** header 2
-fuzz buzz
-*** deeper
-hello world
-* main 2`,
-			`** header 1
-*Bold text* with not bold!
-foo bar
-** header 2
-fuzz buzz
-`},
+			text([]string{
+				"* main",
+				"this is main",
+				"** header 1",
+				"*Bold text* with not bold!",
+				"foo bar",
+				"** header 2",
+				"fuzz buzz",
+				"*** deeper",
+				"hello world",
+				"* main 2"}),
+			text([]string{
+				"** header 1",
+				"*Bold text* with not bold!",
+				"foo bar",
+				"** header 2",
+				"fuzz buzz",
+				""})},
 		{"patter is regex",
 			`header \d$`,
-			`
-* main
-this is main
-** header 1
-*Bold text* with not bold!
-foo bar
-** header 2
-fuzz buzz
-** header A
-hello world
-* header B
-barrr`,
-			`** header 1
-*Bold text* with not bold!
-foo bar
-** header 2
-fuzz buzz
-`},
+			text([]string{
+				"* main",
+				"this is main",
+				"** header 1",
+				"*Bold text* with not bold!",
+				"foo bar",
+				"** header 2",
+				"fuzz buzz",
+				"** header A",
+				"hello world",
+				"* header B",
+				"barrr"}),
+			text([]string{
+				"** header 1",
+				"*Bold text* with not bold!",
+				"foo bar",
+				"** header 2",
+				"fuzz buzz",
+				""})},
 	}
 	for _, tt := range tests {
 		tt := tt
@@ -87,33 +91,35 @@ fuzz buzz
 }
 
 func TestShouldParseWithSubHeaders(t *testing.T) {
-	given := `intro
-* main
-foo bar
-* second A
-fuzz buzz
-** level 2
-hello
-*** level 3
-test
-** level 2 another
-hello 2
-* second B
-lala lala
-* third
-hey`
+	given := text([]string{
+		"intro",
+		"* main",
+		"foo bar",
+		"* second A",
+		"fuzz buzz",
+		"** level 2",
+		"hello",
+		"*** level 3",
+		"test",
+		"** level 2 another",
+		"hello 2",
+		"* second B",
+		"lala lala",
+		"* third",
+		"hey"})
 
-	expected := `* second A
-fuzz buzz
-** level 2
-hello
-*** level 3
-test
-** level 2 another
-hello 2
-* second B
-lala lala
-`
+	expected := text([]string{
+		"* second A",
+		"fuzz buzz",
+		"** level 2",
+		"hello",
+		"*** level 3",
+		"test",
+		"** level 2 another",
+		"hello 2",
+		"* second B",
+		"lala lala",
+		""})
 
 	var actualBuf bytes.Buffer
 
@@ -122,4 +128,8 @@ lala lala
 	assert.NoError(t, underTest.Parse("second.*$", &actualBuf))
 	assert.Equal(t, expected, actualBuf.String())
 
+}
+
+func text(lines []string) string {
+	return strings.Join(lines, "\n")
 }
