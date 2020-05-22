@@ -85,3 +85,41 @@ fuzz buzz
 		})
 	}
 }
+
+func TestShouldParseWithSubHeaders(t *testing.T) {
+	given := `intro
+* main
+foo bar
+* second A
+fuzz buzz
+** level 2
+hello
+*** level 3
+test
+** level 2 another
+hello 2
+* second B
+lala lala
+* third
+hey`
+
+	expected := `* second A
+fuzz buzz
+** level 2
+hello
+*** level 3
+test
+** level 2 another
+hello 2
+* second B
+lala lala
+`
+
+	var actualBuf bytes.Buffer
+
+	underTest := NewParser(bytes.NewBufferString(given)).IncludeSubChapters(true)
+
+	assert.NoError(t, underTest.Parse("second.*$", &actualBuf))
+	assert.Equal(t, expected, actualBuf.String())
+
+}

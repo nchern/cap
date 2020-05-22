@@ -5,15 +5,17 @@ import (
 	"fmt"
 	"io"
 	"regexp"
+	"strings"
 )
 
 var (
 	headerRx = regexp.MustCompile(`^\*+?\s`)
 )
 
-// Parser parses text to extract matched headers with their contents
+// Parser parses text to extract matched headings with their contents
 type Parser struct {
-	r io.Reader
+	printSubHeaders bool
+	r               io.Reader
 }
 
 // NewParser returns a new instanse of Parser initialized with a given reader
@@ -23,19 +25,24 @@ func NewParser(r io.Reader) *Parser {
 	}
 }
 
-// WithSubHeaders instructs this parser to output all subheaders of matched headers
-func (p *Parser) WithSubHeaders() *Parser {
+// WithSubHeaders instructs this parser to output all subheadings of matched headings
+func (p *Parser) IncludeSubChapters(b bool) *Parser {
+	p.printSubHeaders = b
 	return p
 }
 
-// Parse reads the text from given reader line by line, searches for headers that match given pattern
-// and outputs these headers along with their contents to the writer
+// Parse reads the text from given reader line by line, searches for headings that match given pattern
+// and outputs these headings along with their contents to the writer
 func (p *Parser) Parse(pattern string, w io.Writer) error {
+	type foo struct {
+	}
+
 	patternRx, err := regexp.Compile(pattern)
 	if err != nil {
 		return err
 	}
 
+	currentDepth := 0
 	shouldPrint := false
 
 	scanner := bufio.NewScanner(p.r)
@@ -45,11 +52,16 @@ func (p *Parser) Parse(pattern string, w io.Writer) error {
 		header := headerRx.MatchString(line)
 
 		if header {
-			matched := patternRx.MatchString(line)
-			if !shouldPrint && matched {
+			depth := getDepth(headerRx.FindStringSubmatch(line)[0])
+
+			matches := patternRx.MatchString(line)
+			if !shouldPrint && matches {
 				shouldPrint = true
-			} else if shouldPrint && !matched {
-				shouldPrint = false
+				currentDepth = depth
+			} else if shouldPrint && !matches {
+				if !(p.printSubHeaders && depth > currentDepth) {
+					shouldPrint = false
+				}
 			}
 		}
 
@@ -60,4 +72,8 @@ func (p *Parser) Parse(pattern string, w io.Writer) error {
 		}
 	}
 	return scanner.Err()
+}
+
+func getDepth(header string) int {
+	return len(strings.TrimSpace(header))
 }
