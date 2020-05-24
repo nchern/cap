@@ -18,14 +18,14 @@ type Parser struct {
 	r               io.Reader
 }
 
-// NewParser returns a new instanse of Parser initialized with a given reader
+// NewParser returns a new instance of Parser initialized with a given reader
 func NewParser(r io.Reader) *Parser {
 	return &Parser{
 		r: r,
 	}
 }
 
-// WithSubHeaders instructs this parser to output all subheadings of matched headings
+// IncludeSubChapters instructs this parser to output all subheadings of matched headings
 func (p *Parser) IncludeSubChapters(b bool) *Parser {
 	p.printSubHeaders = b
 	return p
