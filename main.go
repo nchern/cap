@@ -16,7 +16,7 @@ import (
 // - ? case insensitive search?
 // - print extended help
 
-var includeSubChapters = flag.Bool("i", false,
+var includeSubChapters = flag.Bool("s", false,
 	"If set, all sub-chapters of the matched chapters are also printed out. Subchapter is a chapter with headings of higher levels that the initial one")
 
 func init() {
