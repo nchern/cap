@@ -15,6 +15,7 @@ var (
 // Parser parses text to extract matched headings with their contents
 type Parser struct {
 	printSubHeaders bool
+	caseInsensitive bool
 	r               io.Reader
 }
 
@@ -31,13 +32,16 @@ func (p *Parser) IncludeSubChapters(b bool) *Parser {
 	return p
 }
 
+// IgnoreCase instructs this parser to ignore case during pattern matching
+func (p *Parser) IgnoreCase(b bool) *Parser {
+	p.caseInsensitive = b
+	return p
+}
+
 // Parse reads the text from given reader line by line, searches for headings that match given pattern
 // and outputs these headings along with their contents to the writer
 func (p *Parser) Parse(pattern string, w io.Writer) error {
-	type foo struct {
-	}
-
-	patternRx, err := regexp.Compile(pattern)
+	patternRx, err := p.regexFromPattern(pattern)
 	if err != nil {
 		return err
 	}
@@ -72,6 +76,13 @@ func (p *Parser) Parse(pattern string, w io.Writer) error {
 		}
 	}
 	return scanner.Err()
+}
+
+func (p *Parser) regexFromPattern(pattern string) (*regexp.Regexp, error) {
+	if p.caseInsensitive {
+		pattern = "(?i)" + pattern
+	}
+	return regexp.Compile(pattern)
 }
 
 func getDepth(header string) int {

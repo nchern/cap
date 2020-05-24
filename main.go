@@ -16,10 +16,13 @@ will be printed to stdout`
 
 // TODO:
 // - header should be determined by a configurable pattern
-// - ? case insensitive search?
 
-var includeSubChapters = flag.Bool("s", false,
-	"If set, all sub-chapters of the matched chapters are also printed out. Subchapter is a chapter with headings of higher levels that the initial one")
+var (
+	includeSubChapters = flag.Bool("s", false,
+		"If set, all sub-chapters of the matched chapters are also printed out. Subchapter is a chapter with headings of higher levels that the initial one")
+
+	ignoreCase = flag.Bool("i", false, "Perform case insensitive heading matching")
+)
 
 func init() {
 	log.SetFlags(0)
@@ -36,14 +39,16 @@ func init() {
 func main() {
 	pattern := flag.Arg(0)
 
-	p := chapter.NewParser(os.Stdin).IncludeSubChapters(*includeSubChapters)
+	p := chapter.NewParser(os.Stdin).
+		IgnoreCase(*ignoreCase).
+		IncludeSubChapters(*includeSubChapters)
 
 	must(p.Parse(pattern, os.Stdout))
 }
 
 func usage() {
 	out := flag.CommandLine.Output()
-	fmt.Fprintf(out, "Usage: %s [FLAGS] [pattern]\n", os.Args[0])
+	fmt.Fprintf(out, "Usage: %s [flags] [pattern]\n", os.Args[0])
 	flag.PrintDefaults()
 	fmt.Fprintln(out, help)
 }

@@ -30,7 +30,9 @@ func TestShouldParse(t *testing.T) {
 				"fuzz buzz",
 				"*** deeper",
 				"hello world",
-				"* main 2"}),
+				"* main 2",
+				"* Subheader 3",
+				"hello Subheader"}),
 			text([]string{
 				"** subheader 1",
 				"*Bold text*",
@@ -58,7 +60,7 @@ func TestShouldParse(t *testing.T) {
 				"** header 2",
 				"fuzz buzz",
 				""})},
-		{"patter is regex",
+		{"pattern is regex",
 			`header \d$`,
 			text([]string{
 				"* main",
@@ -127,7 +129,32 @@ func TestShouldParseWithSubHeaders(t *testing.T) {
 
 	assert.NoError(t, underTest.Parse("second.*$", &actualBuf))
 	assert.Equal(t, expected, actualBuf.String())
+}
 
+func TestShouldParseAndIgnoreCase(t *testing.T) {
+	given := text([]string{
+		"* main",
+		"hello",
+		"** HeADer 1",
+		"foobar",
+		"HEADER 2",
+		"fuzz buzz",
+		"** hdr",
+		"bar"})
+
+	expected := text([]string{
+		"** HeADer 1",
+		"foobar",
+		"HEADER 2",
+		"fuzz buzz",
+		""})
+
+	var actualBuf bytes.Buffer
+
+	underTest := NewParser(bytes.NewBufferString(given)).IgnoreCase(true)
+
+	assert.NoError(t, underTest.Parse("head", &actualBuf))
+	assert.Equal(t, expected, actualBuf.String())
 }
 
 func text(lines []string) string {
