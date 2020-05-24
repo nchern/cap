@@ -14,9 +14,6 @@ This utility scans lines of a given text. If a line is a heading(e.g. '* Header 
 it checks whether it matechs against given regex <pattern>. If it matches, the heading along with its contents(i.e. chapter)
 will be printed to stdout`
 
-// TODO:
-// - header should be determined by a configurable pattern
-
 var (
 	includeSubChapters = flag.Bool("s", false,
 		"If set, all sub-chapters of the matched chapters are also printed out. Subchapter is a chapter with headings of higher levels that the initial one")
@@ -35,6 +32,10 @@ func init() {
 		os.Exit(2)
 	}
 }
+
+// TODO:
+// - specify file to parse, not only stdin
+// - (?) header should be determined by a configurable pattern
 
 func main() {
 	pattern := flag.Arg(0)
