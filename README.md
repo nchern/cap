@@ -5,3 +5,18 @@
 A command line tool to parse and print out markdown-formatted files
 
 > cap. - an abbreviation of capitulum ("chapter").
+
+## Install
+```bash
+make install # You need go compiler set up.
+```
+
+## Usage
+```bash
+$ cap -h
+Usage: cap [FLAGS] [pattern]
+  -s	If set, all sub-chapters of the matched chapters are also printed out. Subchapter is a chapter with headings of higher levels that the initial one
+
+This utility scans lines of a given text. If a line is a heading(e.g. '* Header 1'),
+it checks whether it matechs against given regex <pattern>. If it matches, the heading along with its contents(i.e. chapter)
+```
