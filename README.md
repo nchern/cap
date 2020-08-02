@@ -19,5 +19,5 @@ Usage: cap [FLAGS] [pattern]
 
 This utility scans lines of a given text. If a line is a heading(e.g. '* Header 1'),
 it checks whether it matches against given regex <pattern>.
-If it matches, the heading along with its contents(i.e. chapter)
+If it matches, the heading along with its contents(i.e. chapter) is printed out.
 ```
