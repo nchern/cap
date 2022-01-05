@@ -8,21 +8,23 @@ import (
 	"strings"
 )
 
-var (
-	headerRx = regexp.MustCompile(`^\*+?\s`)
+const (
+	defaultHeaderRxText = `^\*+?\s`
 )
 
 // Parser parses text to extract matched headings with their contents
 type Parser struct {
 	printSubHeaders bool
 	caseInsensitive bool
+	headerRxText    string
 	r               io.Reader
 }
 
 // NewParser returns a new instance of Parser initialized with a given reader
 func NewParser(r io.Reader) *Parser {
 	return &Parser{
-		r: r,
+		r:            r,
+		headerRxText: defaultHeaderRxText,
 	}
 }
 
@@ -38,10 +40,21 @@ func (p *Parser) IgnoreCase(b bool) *Parser {
 	return p
 }
 
+// SetPrefix instructs this parser to use custom prefix to identify a header
+func (p *Parser) SetPrefix(prefix string) *Parser {
+	p.headerRxText = fmt.Sprintf(`^\%s+?\s`, prefix)
+	return p
+}
+
 // Parse reads the text from given reader line by line, searches for headings that match given pattern
 // and outputs these headings along with their contents to the writer
 func (p *Parser) Parse(pattern string, w io.Writer) error {
 	patternRx, err := p.regexFromPattern(pattern)
+	if err != nil {
+		return err
+	}
+
+	headerRx, err := regexp.Compile(p.headerRxText)
 	if err != nil {
 		return err
 	}

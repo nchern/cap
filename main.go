@@ -19,6 +19,8 @@ var (
 		"If set, all sub-chapters of the matched chapters are also printed out. Subchapter is a chapter with headings of higher levels that the initial one")
 
 	ignoreCase = flag.Bool("i", false, "Perform case insensitive heading matching")
+
+	headerPrefix = flag.String("p", "*", "Set header prefix symbol")
 )
 
 func init() {
@@ -42,7 +44,8 @@ func main() {
 
 	p := chapter.NewParser(os.Stdin).
 		IgnoreCase(*ignoreCase).
-		IncludeSubChapters(*includeSubChapters)
+		IncludeSubChapters(*includeSubChapters).
+		SetPrefix(*headerPrefix)
 
 	must(p.Parse(pattern, os.Stdout))
 }

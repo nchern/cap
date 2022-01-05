@@ -92,40 +92,49 @@ func TestShouldParse(t *testing.T) {
 	}
 }
 
-func TestShouldParseWithSubHeaders(t *testing.T) {
+func TestShouldParseFailIfPrefixMakesYieldsRegexp(t *testing.T) {
+	var actualBuf bytes.Buffer
+
+	underTest := NewParser(bytes.NewBufferString("* Header")).SetPrefix("()")
+	assert.Error(t, underTest.Parse("Header.*$", &actualBuf))
+}
+
+func TestShouldParseWithDiffentHeaderMarker(t *testing.T) {
 	given := text([]string{
 		"intro",
-		"* main",
+		"# main",
 		"foo bar",
-		"* second A",
+		"# second A",
 		"fuzz buzz",
-		"** level 2",
+		"## level 2",
 		"hello",
-		"*** level 3",
+		"### level 3",
 		"test",
-		"** level 2 another",
+		"## level 2 another",
 		"hello 2",
-		"* second B",
+		"# second B",
 		"lala lala",
-		"* third",
+		"# third",
 		"hey"})
 
 	expected := text([]string{
-		"* second A",
+		"# second A",
 		"fuzz buzz",
-		"** level 2",
+		"## level 2",
 		"hello",
-		"*** level 3",
+		"### level 3",
 		"test",
-		"** level 2 another",
+		"## level 2 another",
 		"hello 2",
-		"* second B",
+		"# second B",
 		"lala lala",
 		""})
 
 	var actualBuf bytes.Buffer
 
-	underTest := NewParser(bytes.NewBufferString(given)).IncludeSubChapters(true)
+	underTest := NewParser(bytes.NewBufferString(given)).
+		IncludeSubChapters(true).
+		SetPrefix("#")
 
 	assert.NoError(t, underTest.Parse("second.*$", &actualBuf))
 	assert.Equal(t, expected, actualBuf.String())
